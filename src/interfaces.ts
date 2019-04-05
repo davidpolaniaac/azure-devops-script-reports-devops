@@ -4,6 +4,12 @@ export interface Frequency {
 }
 
 export interface PatternStandar {
-    frequency : Frequency[];
+    frequency: Frequency[];
     presence: string[][];
+}
+
+
+export interface ReportRepositoryCommits {
+    name: string,
+    totalCommit: number
 }
