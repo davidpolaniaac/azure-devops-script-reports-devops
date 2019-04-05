@@ -1,4 +1,3 @@
-const fs = require('fs');
 import * as common from './common';
 import * as nodeApi from 'azure-devops-node-api';
 import * as ReleaseApi from 'azure-devops-node-api/ReleaseApi';
@@ -42,22 +41,11 @@ async function validatorDeploy(definitionId: number,releaseApi: ReleaseApi.IRele
     return releases.some( (release: ReleaseInterfaces.Release ) => environmentStatus(release.environments as ReleaseInterfaces.ReleaseEnvironment[], ENVIROMENT_EXCLUSION) );
 }
 
-function saveInFile( namefile:string, definitions: ReleaseInterfaces.ReleaseDefinition[]) {
-
-    const definitionsName = definitions.map( (definition: ReleaseInterfaces.ReleaseDefinition) => definition.name ).join("\n");
-    fs.writeFile("report/"+namefile+".csv", definitionsName , function(err: any) {
-        if(err) {
-            return console.log(err);
-        }
-        console.log(`The file : ${namefile} was saved`);
-    });
-}
-
 async function run() {
 
     try {
 
-        common.banner('Configuration');
+        common.banner('Configuration Pipelines');
 
         const webApi: nodeApi.WebApi = await common.getWebApi();
         const releaseApi: ReleaseApi.IReleaseApi = await webApi.getReleaseApi();
@@ -141,11 +129,11 @@ async function run() {
             console.log("releaseDefinitionWithSomeStandarDeploy : ", releaseDefinitionWithSomeStandarDeploy.length );
 
 
-            saveInFile("releaseDefinitionFilterBasic",releaseDefinitionFilterBasic);
-            saveInFile("releaseDefinitionWithStandarStage",releaseDefinitionWithStandarStage);
-            saveInFile("releaseDefinitionWithStandarWithoutRollBack",releaseDefinitionWithStandarWithoutRollBack);
-            saveInFile("releaseDefinitionWithSomeStandar",releaseDefinitionWithSomeStandar);
-            saveInFile("releaseDefinitionWithSomeStandarDeploy",releaseDefinitionWithSomeStandarDeploy);
+            await utlis.createCSV("releaseDefinitionFilterBasic",releaseDefinitionFilterBasic);
+            await utlis.createCSV("releaseDefinitionWithStandarStage",releaseDefinitionWithStandarStage);
+            await utlis.createCSV("releaseDefinitionWithStandarWithoutRollBack",releaseDefinitionWithStandarWithoutRollBack);
+            await utlis.createCSV("releaseDefinitionWithSomeStandar",releaseDefinitionWithSomeStandar);
+            await utlis.createCSV("releaseDefinitionWithSomeStandarDeploy",releaseDefinitionWithSomeStandarDeploy);
 
             
         } catch(err){

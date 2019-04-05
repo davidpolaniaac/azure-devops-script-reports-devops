@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./coverage && rimraf ./report",
-    "report": "node dist/index.js",
+    "report-pipeline": "node dist/pipeline.js",
+    "report-commits": "node dist/commits.js",
     "test": "jest --config jestconfig.json --coverage",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
@@ -32,8 +33,8 @@
   "dependencies": {
     "@types/dotenv": "^6.1.0",
     "azure-devops-node-api": "^7.0.0",
-    "csv-writer": "^1.2.0",
-    "dotenv": "^6.2.0"
+    "dotenv": "^6.2.0",
+    "objects-to-csv": "^1.2.1"
   },
   "devDependencies": {
     "@types/jest": "^23.3.12",

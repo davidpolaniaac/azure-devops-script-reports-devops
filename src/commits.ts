@@ -4,7 +4,7 @@ import * as GitApi from 'azure-devops-node-api/GitApi';
 import * as dotenv from "dotenv";
 import * as GitInterfaces from 'azure-devops-node-api/interfaces/GitInterfaces';
 import * as Interfaces from './interfaces';
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+import * as utlis from './utils';
 
 dotenv.config({ path: `${__dirname}/../.env` });
 
@@ -12,7 +12,7 @@ async function run() {
 
     try {
 
-        common.banner('Configuration');
+        common.banner('Configuration Commits');
 
         const webApi: nodeApi.WebApi = await common.getWebApi();
         const gitApi: GitApi.IGitApi = await webApi.getGitApi();
@@ -26,17 +26,15 @@ async function run() {
         const repositories: GitInterfaces.GitRepository[] = repositoriesFilterTest.filter(repo => !(repo.name as string).toLowerCase().includes("dojo")  );
         const criteria: GitInterfaces.GitQueryCommitsCriteria = { fromDate: '1/10/2018 12:00:00 AM' }
 
-
-        const dateStart = new Date();
-        console.log("dateStart: ", dateStart.toISOString());
         console.log("total de repositories :", repositories.length);
+        console.time("commits");
         let report: Interfaces.ReportRepositoryCommits[] = [];
-
+        const increase = 300;
         // Con promesas
-        for (let index = 0; index < repositories.length; index = index + 200) {
+        for (let index = 0; index < repositories.length; index = index + increase) {
 
             const init = index;
-            const aux = index + 200;
+            const aux = index + increase;
             const finsh = (aux > repositories.length) ? repositories.length : aux;
 
             const promises = repositories.slice(init, finsh).map(async repo => {
@@ -50,10 +48,10 @@ async function run() {
             });
 
             const results: Interfaces.ReportRepositoryCommits[] = await Promise.all(promises);
-            report.concat(results);
+            report = report.concat(results);
 
             // results.forEach(result => {
-            //     console.log(result.name, result.totalCommit);
+            //     console.log(result.name+","+result.totalCommit);
             // });
         }
 
@@ -68,21 +66,9 @@ async function run() {
         //     report.push(reportRepositoryCommits);
         // }
 
-        const csvWriter = createCsvWriter({
-            path: 'dist/commits.csv',
-            header: [
-                { id: 'name', title: 'Name' },
-                { id: 'totalCommit', title: 'total Commits' },
-            ]
-        });
+        await utlis.createCSV("commits",report);
 
-        csvWriter
-            .writeRecords(report)
-            .then(() => console.log('The CSV file was written successfully'));
-
-        const dateFinish = new Date();
-        console.log("dateFinish : ", dateFinish.toISOString());
-        console.log("Total", dateFinish.getTime() - dateStart.getTime());
+        console.timeEnd("commits");
 
     } catch (error) {
         console.log('ERROR', error);
