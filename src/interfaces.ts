@@ -12,12 +12,7 @@ export interface PatternStandar {
 export interface ReportRepositoryCommits {
     name: string;
     totalCommit: number;
-    languageName1: string,
-    languagePercentage1: number;
-    languageName2: string,
-    languagePercentage2: number;
-    languageName3: string,
-    languagePercentage3: number;
+    [key: string]: any;
 }
 
 export interface AnalysisMetric {

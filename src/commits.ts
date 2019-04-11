@@ -36,8 +36,9 @@ async function run() {
         console.time("commits");
         let report: Interfaces.ReportRepositoryCommits[] = [];
         const increase = 200;
+        const numberLanguage = 3
         // Con promesas
-        for (let index = 0; index < repositories.length; index = index + increase) {
+        for (let index = 2400; index < repositories.length; index = index + increase) {
 
             const init = index;
             const aux = index + increase;
@@ -53,19 +54,19 @@ async function run() {
                     metrics = metricFull.languageBreakdown.map( ( statistics : ProjectInterfaces.LanguageStatistics) =>  {
                         const value : Interfaces.AnalysisMetric = {  languageName:statistics.name as string, languagePercentage:statistics.languagePercentage as number }
                         return value;
-                    }).sort((elem:Interfaces.AnalysisMetric) => elem.languagePercentage as number ).reverse();
+                    }).sort((elem:Interfaces.AnalysisMetric) => elem.languagePercentage as number ).reverse().slice(0,numberLanguage);
                 }
-                
-                const reportRepositoryCommits: Interfaces.ReportRepositoryCommits = {
+
+                let reportRepositoryCommits: Interfaces.ReportRepositoryCommits = {
                     name: repo.name as string,
                     totalCommit: commits.length,
-                    languageName1:(metrics[0])? metrics[0].languageName: "",
-                    languagePercentage1: (metrics[0])? metrics[0].languagePercentage: 0,
-                    languageName2: (metrics[1])? metrics[1].languageName: "",
-                    languagePercentage2: (metrics[1])? metrics[1].languagePercentage: 0,
-                    languageName3: (metrics[2] )? metrics[2].languageName: "",
-                    languagePercentage3: (metrics[2])? metrics[2].languagePercentage: 0,
                 }
+
+                metrics.forEach( ( metric: Interfaces.AnalysisMetric, index :number) => {
+                    reportRepositoryCommits["languageName "+index] = metric.languageName;
+                    reportRepositoryCommits["languagePercentage "+index] = metric.languagePercentage;
+                })
+
                 return reportRepositoryCommits;
             });
 
